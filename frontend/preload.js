@@ -1,5 +1,6 @@
-const { contextBridge } = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld("api", {
-  example: () => "from preload",
+contextBridge.exposeInMainWorld("flasher", {
+    analyze: (dataURI) => ipcRenderer.invoke("analyze-frame", dataURI),
+    getSourceId: () => ipcRenderer.invoke("flasher:list-sources"),
 });

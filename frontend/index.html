@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Flash Guard</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                text-align: center;
+            }
+            #status {
+                font-size: 2rem;
+                margin-top: 1rem;
+            }
+            video,
+            canvas {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Flash Guard</h1>
+        <p id="status">Starting up…</p>
+        <video id="vid" autoplay></video>
+        <canvas id="canvas"></canvas>
+
+        <script>
+            const statusEl = document.getElementById("status");
+            const video = document.getElementById("vid");
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            async function start() {
+                try {
+                    const sourceId = await window.flasher.getSourceId();
+
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        audio: false,
+                        video: {
+                            mandatory: {
+                                chromeMediaSource: "desktop",
+                                chromeMediaSourceId: sourceId,
+                                minWidth: 1280,
+                                minHeight: 720,
+                            },
+                        },
+                    });
+
+                    video.srcObject = stream;
+                    await video.play();
+
+                    canvas.width = 320;
+                    canvas.height = 180;
+                    requestAnimationFrame(loop);
+                } catch (err) {
+                    statusEl.textContent = err.message || err;
+                }
+            }
+
+            async function loop() {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const flash = await window.flasher.analyze(
+                    canvas.toDataURL("image/png")
+                );
+
+                statusEl.textContent = flash ? "⚠️ FLASH DETECTED!" : "✅ Safe";
+                statusEl.style.color = flash ? "red" : "green";
+
+                requestAnimationFrame(loop);
+            }
+
+            start();
+        </script>
+    </body>
+</html>
