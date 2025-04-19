@@ -1,5 +1,5 @@
 opencv-python
 mss
 numpy
-Flask
+flask
 flask-cors
