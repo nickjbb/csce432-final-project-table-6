@@ -7,6 +7,7 @@ from flask_cors import CORS
 import cv2, base64, re, numpy as np
 from collections import deque
 import time
+from typing import Union
 
 app = Flask(__name__)
 CORS(app)
@@ -16,7 +17,7 @@ LUM_DIFF_THRESH = 30          # average‑brightness jump (0‑255)
 WINDOW_SEC      = 1.0         # look‑back window length
 HITS_REQUIRED   = 3           # flashes needed in that window
 
-prev_lum: float | None = None
+prev_lum: Union[float, None] = None
 hits = deque()
 
 def decode_gray(uri: str) -> np.ndarray:

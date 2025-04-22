@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Luminance Flash Test</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: black;
+  }
+
+  .flash-area {
+    width: 100%;
+    height: 100vh;
+    animation: luminance-flash 0.5s steps(1, start) infinite;
+  }
+
+  @keyframes luminance-flash {
+    0% { background-color: white; }
+    50% { background-color: white; }
+    50.1% { background-color: black; }
+    100% { background-color: black; }
+  }
+</style>
+</head>
+<body>
+
+<div class="flash-area"></div>
+
+</body>
+</html>

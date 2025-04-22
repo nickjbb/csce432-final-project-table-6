@@ -1,75 +1,340 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Flash Guard</title>
-        <style>
-            body {
-                font-family: sans-serif;
-                text-align: center;
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Guard - Safe Browsing Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 500px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-container {
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .shield-icon {
+            width: 48px;
+            height: 48px;
+            background: #6b7280;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .shield-icon::before {
+            content: "";
+            position: absolute;
+            width: 24px;
+            height: 28px;
+            background: white;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #4a5568;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease-in-out;
+            outline: none;
+            background: #f8fafc;
+        }
+
+        input:focus {
+            border-color: #6b7280;
+            box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.15);
+            background: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover:not(:disabled) {
+            background: #4a5568;
+            transform: translateY(-1px);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .status-ready {
+            background: #f0f4f8;
+            color: #4a5568;
+        }
+
+        .status-scanning {
+            background: #f0f9ff;
+            color: #2563eb;
+        }
+
+        .status-safe {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .status-warning {
+            background: #fffbeb;
+            color: #854d0e;
+        }
+
+        .status-danger {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .footer {
+            margin-top: 32px;
+            text-align: center;
+            color: #4a5568;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        button:disabled .loading-spinner {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Removed pulse animation to avoid potential triggers */
+        
+        /* Accessibility improvements */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #6b7280;
+            color: white;
+            padding: 8px;
+            z-index: 100;
+            transition: top 0.3s;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
             }
-            #status {
-                font-size: 2rem;
-                margin-top: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px;
             }
-            video,
-            canvas {
-                display: none;
+            
+            h1 {
+                font-size: 1.75rem;
             }
-        </style>
-    </head>
-    <body>
-        <h1>Flash Guard</h1>
-        <p id="status">Starting up…</p>
-        <video id="vid" autoplay></video>
-        <canvas id="canvas"></canvas>
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container" id="main-content">
+        <div class="header">
+            <div class="logo-container">
+                <div class="shield-icon" role="img" aria-label="Shield logo"></div>
+            </div>
+            <h1>Flash Guard</h1>
+            <p class="subtitle">Safe browsing protection for photosensitive users</p>
+        </div>
 
-        <script>
-            const statusEl = document.getElementById("status");
-            const video = document.getElementById("vid");
-            const canvas = document.getElementById("canvas");
-            const ctx = canvas.getContext("2d");
+        <div class="input-group">
+            <label for="urlInput">Enter URL to scan:</label>
+            <input 
+                type="url" 
+                id="urlInput" 
+                placeholder="https://example.com" 
+                autocomplete="url"
+                aria-describedby="status"
+                aria-required="true"
+            >
+        </div>
 
-            async function start() {
-                try {
-                    const sourceId = await window.flasher.getSourceId();
+        <button id="scanButton" aria-controls="status">
+            <span>Scan Page</span>
+            <div class="loading-spinner" aria-hidden="true"></div>
+        </button>
 
-                    const stream = await navigator.mediaDevices.getUserMedia({
-                        audio: false,
-                        video: {
-                            mandatory: {
-                                chromeMediaSource: "desktop",
-                                chromeMediaSourceId: sourceId,
-                                minWidth: 1280,
-                                minHeight: 720,
-                            },
-                        },
-                    });
+        <div id="status" class="status status-ready" role="alert" aria-live="polite">
+            Ready to scan
+        </div>
 
-                    video.srcObject = stream;
-                    await video.play();
+        <div class="footer">
+            Flash Guard protects you from potentially harmful flashing content
+        </div>
+    </div>
 
-                    canvas.width = 320;
-                    canvas.height = 180;
-                    requestAnimationFrame(loop);
-                } catch (err) {
-                    statusEl.textContent = err.message || err;
+    <script>
+        const statusEl = document.getElementById("status");
+        const urlInput = document.getElementById("urlInput");
+        const scanButton = document.getElementById("scanButton");
+        const buttonText = scanButton.querySelector("span");
+
+        function updateStatus(message, className) {
+            statusEl.textContent = message;
+            statusEl.className = `status ${className}`;
+        }
+
+        scanButton.addEventListener('click', async () => {
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                updateStatus("Please enter a URL.", "status-warning");
+                urlInput.focus();
+                return;
+            }
+
+            try {
+                new URL(url.startsWith('http') ? url : `https://${url}`);
+            } catch (e) {
+                updateStatus("Please enter a valid URL", "status-warning");
+                urlInput.focus();
+                return;
+            }
+
+            buttonText.textContent = "Scanning...";
+            updateStatus("Scanning page for flashing content...", "status-scanning");
+            scanButton.disabled = true;
+            scanButton.setAttribute('aria-busy', 'true');
+
+            try {
+                const isFlashing = await window.flasher.analyzeUrl(url);
+
+                if (isFlashing) {
+                    updateStatus("⚠️ FLASH DETECTED! Do not visit this page!", "status-danger");
+                } else {
+                    updateStatus("✅ Page is safe. You are safe to visit this page.", "status-safe");
+                    // Small delay before navigation for user feedback
+                    // setTimeout(() => {
+                    //     window.location.href = url.startsWith('http') ? url : `https://${url}`;
+                    // }, 1500);
                 }
+            } catch (err) {
+                console.error("Scanning error:", err);
+                updateStatus(`Error during scan: ${err.message || err}`, "status-warning");
+            } finally {
+                scanButton.disabled = false;
+                scanButton.setAttribute('aria-busy', 'false');
+                buttonText.textContent = "Scan Before Navigating";
             }
+        });
 
-            async function loop() {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const flash = await window.flasher.analyze(
-                    canvas.toDataURL("image/png")
-                );
-
-                statusEl.textContent = flash ? "⚠️ FLASH DETECTED!" : "✅ Safe";
-                statusEl.style.color = flash ? "red" : "green";
-
-                requestAnimationFrame(loop);
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                scanButton.click();
             }
-
-            start();
-        </script>
-    </body>
+        });
+    </script>
+</body>
 </html>
